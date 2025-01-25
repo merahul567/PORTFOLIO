@@ -4,20 +4,11 @@ FROM openjdk:17-jdk
 # Set the working directory in the container
 WORKDIR /app
 
-# Install utilities first (apt-get)
-RUN apt-get update -y && apt-get install -y \
-    curl \
-    apt-transport-https \
-    maven
-
-# Copy the local code to the container
-COPY . /app
-
-# Build the app using Maven
-RUN mvn clean install
+# Copy the JAR file from the target directory into the container
+COPY target/portfolio-services-0.0.1-SNAPSHOT.jar /app/portfolio-services.jar
 
 # Expose the port the app runs on
 EXPOSE 8080
 
-# Run the Spring Boot app
-CMD ["java", "-jar", "target/portfolio-services-0.0.1-SNAPSHOT.jar"]
+# Run the Spring Boot app using the JAR file
+CMD ["java", "-jar", "portfolio-services.jar"]
