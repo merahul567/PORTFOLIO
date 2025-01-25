@@ -1,6 +1,7 @@
 *.iml
 .settings
-target
+portfolio-services/target/**
+!portfolio-services/target/portfolio-services-0.0.1-SNAPSHOT.jar
 .project
 .classpath
 dist
