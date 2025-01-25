@@ -9,11 +9,14 @@ COPY .mvn/ .mvn/
 COPY mvnw mvnw
 COPY pom.xml .
 
-# Make the mvnw file executable
+# Ensure mvnw is executable
 RUN chmod +x mvnw
 
 # Run the Maven Wrapper to build the application (using mvnw)
-#RUN ./mvnw clean install -DskipTests
+RUN ./mvnw clean install -DskipTests
+
+# Check if the JAR file exists after the build and copy it into the container
+RUN ls -l target/
 
 # Copy the built JAR file into the container
 COPY target/portfolio-services-0.0.1-SNAPSHOT.jar /app/portfolio-services.jar
@@ -22,4 +25,4 @@ COPY target/portfolio-services-0.0.1-SNAPSHOT.jar /app/portfolio-services.jar
 EXPOSE 8080
 
 # Run the Spring Boot application
-CMD ["java", "-jar", "portfolio-services.jar"]
+CMD ["java", "-jar", "/app/portfolio-services.jar"]
