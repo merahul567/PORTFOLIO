@@ -9,14 +9,11 @@ COPY .mvn/ .mvn/
 COPY mvnw mvnw
 COPY pom.xml .
 
-# Ensure mvnw is executable
+# Make the mvnw file executable
 RUN chmod +x mvnw
 
 # Run the Maven Wrapper to build the application (using mvnw)
-RUN ./mvnw clean install -DskipTests
-
-# Check if the JAR file exists after the build and copy it into the container
-RUN ls -l target/
+#RUN ./mvnw clean install -DskipTests
 
 # Copy the built JAR file into the container
 COPY target/portfolio-services-0.0.1-SNAPSHOT.jar /app/portfolio-services.jar
