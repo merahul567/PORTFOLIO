@@ -4,22 +4,15 @@ FROM openjdk:17-jdk-slim
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy Maven Wrapper files (mvnw, mvnw.cmd, .mvn folder) into the container
+# Copy Maven Wrapper and POM file into the container
 COPY .mvn/ .mvn/
-COPY mvnw mvnw
-COPY pom.xml .
+COPY mvnw pom.xml ./
 
-# Make the mvnw file executable
-RUN chmod +x mvnw
+# Pre-download dependencies to make the build faster
+RUN ./mvnw dependency:go-offline
 
-# Run the Maven Wrapper to build the application (using mvnw)
-RUN ./mvnw clean package
+# Copy the source code into the container
+COPY src ./src
 
-# Copy the built JAR file into the container
-COPY target/portfolio-services-0.0.1-SNAPSHOT.jar /app/portfolio-services.jar
-
-# Expose the port that your Spring Boot app will run on
-EXPOSE 8080
-
-# Run the Spring Boot application
-CMD ["java", "-jar", "/app/portfolio-services.jar"]
+# Define the command to run the application
+CMD ["./mvnw", "spring-boot:run"]
