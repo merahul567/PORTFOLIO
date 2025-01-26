@@ -8,6 +8,9 @@ WORKDIR /app
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 
+# Make the Maven Wrapper script executable
+RUN chmod +x mvnw
+
 # Pre-download dependencies to make the build faster
 RUN ./mvnw dependency:go-offline
 
