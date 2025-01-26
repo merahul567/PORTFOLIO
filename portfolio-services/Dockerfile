@@ -13,7 +13,7 @@ COPY pom.xml .
 RUN chmod +x mvnw
 
 # Run the Maven Wrapper to build the application (using mvnw)
-#RUN ./mvnw clean install -DskipTests
+RUN ./mvnw clean install -DskipTests
 
 # Copy the built JAR file into the container
 COPY target/portfolio-services-0.0.1-SNAPSHOT.jar /app/portfolio-services.jar
