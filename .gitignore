@@ -4,6 +4,7 @@ portfolio-services/target/**
 !portfolio-services/target/portfolio-services-0.0.1-SNAPSHOT.jar
 .project
 .classpath
+.factorypath
 dist
 
 # Numerous always-ignore extensions
