@@ -1,23 +1,21 @@
-# Use OpenJDK 17 as a parent image
-FROM openjdk:17-jdk
+# Use OpenJDK 17 base image
+FROM openjdk:17-jdk-slim
 
-# Set the working directory in the container
+# Set the working directory inside the container
 WORKDIR /app
 
-# Install utilities first (apt-get)
-RUN apt-get update -y && apt-get install -y \
-    curl \
-    apt-transport-https \
-    maven
+# Copy Maven Wrapper and POM file into the container
+COPY .mvn/ .mvn/
+COPY mvnw pom.xml ./
 
-# Copy the local code to the container
-COPY . /app
+# Make the Maven Wrapper script executable
+RUN chmod +x mvnw
 
-# Build the app using Maven
-RUN mvn clean install
+# Pre-download dependencies to make the build faster
+RUN ./mvnw dependency:go-offline
 
-# Expose the port the app runs on
-EXPOSE 8080
+# Copy the source code into the container
+COPY src ./src
 
-# Run the Spring Boot app
-CMD ["java", "-jar", "target/portfolio-services-0.0.1-SNAPSHOT.jar"]
+# Define the command to run the application
+CMD ["./mvnw", "spring-boot:run"]
