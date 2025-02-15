@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { axiosGet } from "../apiService.js"; 
+import "./ProjectPage.css";
 
-function ProjectsPage() {
+function ProjectPage() {
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
@@ -10,12 +11,12 @@ function ProjectsPage() {
   }, []);
 
   return (
-    <div>
+    <div className="page-container">
       <h1>My Projects</h1>
-      <ul>
+      <ul className="project-list">
         {projects.map(project => (
-          <li key={project.id}>
-            <h2>{project.name}</h2>
+          <li key={project.id}> 
+            <h2>🔹{project.name}</h2>
             <p>{project.description}</p>
             <p><strong>Tech Stack:</strong> {project.techStack}</p>
           </li>
@@ -25,4 +26,4 @@ function ProjectsPage() {
   );
 }
 
-export default ProjectsPage;
+export default ProjectPage;

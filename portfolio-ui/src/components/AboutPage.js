@@ -1,15 +1,14 @@
-import React from 'react';
+import React from "react";
+import "./AboutPage.css";
 
-function AboutPage() {
+const AboutPage = () => {
   return (
-    <div>
+    <div className="page-container">
       <h1>About Me</h1>
-      <p>
-        Hello, I'm Rahul Kumar, a Full Stack Developer specializing in Java and React.
-        I have worked on multiple web applications and enjoy creating scalable and performant systems.
-      </p>
+      <p>Hello! I'm Rahul Kumar, a software developer specializing in Java and React.</p>
+      <p>I have 6 years of experience in software development and a strong passion for technology.</p>
     </div>
   );
-}
+};
 
 export default AboutPage;

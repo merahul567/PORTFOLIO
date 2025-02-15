@@ -1,0 +1,9 @@
+ .blog-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .blog-list li {
+    font-size: 18px;
+    margin: 10px 0;
+  }  
