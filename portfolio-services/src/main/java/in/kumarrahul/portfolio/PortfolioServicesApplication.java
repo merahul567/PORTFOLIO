@@ -3,11 +3,13 @@ package in.kumarrahul.portfolio;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import in.kumarrahul.portfolio.entity.Project;
 import in.kumarrahul.portfolio.repository.ProjectRepository;
 
 @SpringBootApplication
+@EnableScheduling
 public class PortfolioServicesApplication implements CommandLineRunner{
 	
 	private final ProjectRepository projectRepository;

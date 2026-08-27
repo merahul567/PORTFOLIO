@@ -5,6 +5,7 @@ import { SITE } from "../siteConfig";
 import { snapshotInstruments } from "../data/marketSnapshot";
 import { featuredTools } from "../data/toolsCatalog";
 import { forthcomingInsights } from "../data/insightsPreview";
+import MarketSnapshot from "../components/MarketSnapshot";
 
 export default function HomePage() {
   return (
@@ -52,16 +53,7 @@ export default function HomePage() {
             <h2 id="snapshot-heading">Market snapshot</h2>
             <Link to="/markets">Open dashboard</Link>
           </div>
-          <div className="snapshot-grid">
-            {snapshotInstruments.map((instrument) => (
-              <article key={instrument.id} className="snapshot-card">
-                <div className="snapshot-region">{instrument.region}</div>
-                <h3>{instrument.label}</h3>
-                <div className="snapshot-value">Unavailable</div>
-                <div className="snapshot-meta">No live feed configured</div>
-              </article>
-            ))}
-          </div>
+          <MarketSnapshot />
           <p className="quiet-note" style={{ marginTop: "0.85rem" }}>
             Quotes are not invented. Values appear here only after a market-data source is
             connected on the server, with timestamp and attribution.
