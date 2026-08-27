@@ -1,6 +1,6 @@
 # ---------- Build Stage ----------
-# Use Eclipse Temurin JDK 17 base image (actively maintained)
-FROM eclipse-temurin:17-jdk-slim AS build
+# Use Eclipse Temurin JDK 17 (official OpenJDK successor)
+FROM eclipse-temurin:17-jdk AS build
 
 # Set working directory
 WORKDIR /app
@@ -22,8 +22,8 @@ COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
 # ---------- Runtime Stage ----------
-# Use a smaller JRE image for running the app
-FROM eclipse-temurin:17-jre-slim
+# Use Eclipse Temurin JRE 17 for lightweight runtime
+FROM eclipse-temurin:17-jre
 
 # Set working directory
 WORKDIR /app
