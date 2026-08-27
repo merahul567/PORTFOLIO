@@ -1,24 +1,38 @@
-# Use OpenJDK 17 base image
-FROM openjdk:17-jdk-slim
+# ---------- Build Stage ----------
+# Use Eclipse Temurin JDK 17 base image (actively maintained)
+FROM eclipse-temurin:17-jdk-slim AS build
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy Maven Wrapper and POM file into the container
+# Copy Maven Wrapper and POM file
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 
-# Make the Maven Wrapper script executable
+# Make Maven Wrapper executable
 RUN chmod +x mvnw
 
-# Pre-download dependencies to make the build faster
+# Pre-download dependencies
 RUN ./mvnw dependency:go-offline
 
-# Copy the source code into the container
+# Copy source code
 COPY src ./src
 
-# Expose the port the app runs on
+# Package the application (skip tests for faster build, optional)
+RUN ./mvnw clean package -DskipTests
+
+# ---------- Runtime Stage ----------
+# Use a smaller JRE image for running the app
+FROM eclipse-temurin:17-jre-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy built JAR from build stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose application port
 EXPOSE 8080
 
-# Define the command to run the application
-CMD ["./mvnw", "spring-boot:run"]
+# Run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
