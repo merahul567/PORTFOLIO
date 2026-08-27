@@ -14,7 +14,7 @@ public class HomeController {
     @GetMapping("/greeting")
     public Map<String, String> getGreeting() {
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Hello from Rahul Kumar!");
+        response.put("message", "I am Rahul Kumar, a passionate Software Developer and Tech Enthusiast.");
         return response;
     }
 }	

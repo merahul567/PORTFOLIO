@@ -17,5 +17,8 @@ RUN ./mvnw dependency:go-offline
 # Copy the source code into the container
 COPY src ./src
 
+# Expose the port the app runs on
+EXPOSE 8080
+
 # Define the command to run the application
 CMD ["./mvnw", "spring-boot:run"]

@@ -1,1 +1,0 @@
-{"version":3,"file":"static/css/main.ed445e27.css","mappings":"AAAA,KAIE,kCAAmC,CACnC,iCAAkC,CAHlC,8DACY,CAFZ,QAKF","sources":["index.css"],"sourcesContent":["body {\n  margin: 0;\n  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',\n    sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}"],"names":[],"sourceRoot":""}
