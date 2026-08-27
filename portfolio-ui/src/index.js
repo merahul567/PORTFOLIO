@@ -6,8 +6,16 @@ import "./index.css";
 import App from "./App";
 import { ThemeProvider } from "./theme/ThemeProvider";
 import reportWebVitals from "./reportWebVitals";
+import ReactGA from 'react-ga4';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
+// Initialize Google Analytics
+const measurementId = process.env.REACT_APP_GA_MEASUREMENT_ID;
+if (measurementId) {
+  ReactGA.initialize(measurementId);
+}
+
 root.render(
   <React.StrictMode>
     <HelmetProvider>
