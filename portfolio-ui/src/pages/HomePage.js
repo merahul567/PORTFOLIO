@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Seo from "../seo/Seo";
 import { SITE } from "../siteConfig";
-import { snapshotInstruments } from "../data/marketSnapshot";
 import { featuredTools } from "../data/toolsCatalog";
 import { forthcomingInsights } from "../data/insightsPreview";
 import MarketSnapshot from "../components/MarketSnapshot";
@@ -95,18 +94,6 @@ export default function HomePage() {
           </div>
           <p className="quiet-note" style={{ marginTop: "0.85rem" }}>
             Articles are not published yet. These are the first explainers in progress.
-          </p>
-        </section>
-
-        <section className="home-section experiments" aria-labelledby="experiments-heading">
-          <div className="section-head">
-            <h2 id="experiments-heading">Experiments</h2>
-            <Link to="/projects">Projects</Link>
-          </div>
-          <p>
-            This platform itself is the current public experiment: a Spring Boot service and a
-            React interface, deployed as a single site. Selected work will be listed on Projects
-            as real write-ups exist — not as placeholder titles.
           </p>
         </section>
 

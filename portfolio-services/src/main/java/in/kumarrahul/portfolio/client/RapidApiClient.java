@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,44 +15,29 @@ public class RapidApiClient {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    public JsonNode getMetalsData() {
-        try {
-            // Using corrected Metals.live API endpoint
-            String url = "https://api.metals.live/v1/spot/gold";
+    @Value("${app.exchange-rate.api-key}")
+    private String apiKey;
 
-            log.debug("Fetching gold price from Metals.live");
-            String response = restTemplate.getForObject(url, String.class);
-            JsonNode data = objectMapper.readTree(response);
-
-            // Response format: {"gold": 2150.50}
-            if (data.has("gold")) {
-                log.info("Successfully fetched gold price");
-                return data;
-            }
-            log.warn("Unexpected response from Metals API: {}", response);
-            return null;
-        } catch (Exception e) {
-            log.error("Error fetching metals data from Metals.live", e);
-            return null;
-        }
-    }
+    @Value("${app.exchange-rate.base-url}")
+    private String baseUrl;
 
     public JsonNode getForexData(String baseCurrency, String targetCurrency) {
         try {
-            // Using ExchangeRate-API (working well)
-            String url = String.format("https://api.exchangerate-api.com/v4/latest/%s", baseCurrency);
+            String url = String.format("%s/%s/latest/%s", baseUrl, apiKey, baseCurrency);
+            log.debug("Fetching forex {} to {} from ExchangeRate-API", baseCurrency, targetCurrency);
 
-            log.debug("Fetching forex {} to {}", baseCurrency, targetCurrency);
             String response = restTemplate.getForObject(url, String.class);
             JsonNode data = objectMapper.readTree(response);
 
-            if (data.has("rates")) {
-                log.info("Successfully fetched forex rates for {}", baseCurrency);
+            if (data != null && data.has("conversion_rates") && data.get("conversion_rates").has(targetCurrency)) {
+                log.info("Successfully fetched ExchangeRate-API forex rates for {}", baseCurrency);
                 return data;
             }
+
+            log.warn("Unexpected ExchangeRate-API response for {} -> {}: {}", baseCurrency, targetCurrency, response);
             return null;
         } catch (Exception e) {
-            log.error("Error fetching forex data", e);
+            log.error("Error fetching forex data from ExchangeRate-API", e);
             return null;
         }
     }

@@ -7,17 +7,16 @@ export default function MarketsPage() {
     <div className="page inner-page">
       <Seo
         title="Markets"
-        description="Indian and global market dashboard on KumarRahul.in. Live values appear only when a data source is configured."
+        description="Market charts and currency rates displayed with TradingView and ExchangeRate-API attribution on KumarRahul.in."
         path="/markets"
       />
       <div className="wrap">
         <p className="page-kicker">Market intelligence</p>
         <h1 className="page-title">Market dashboard</h1>
         <p className="page-lead">
-          Real-time data for Indian indices, global benchmarks, precious metals, and forex rates.
-          All data sourced from free public APIs — no paid subscriptions.
+          TradingView widgets display the market charts, while the USD / INR reference rate is sourced from ExchangeRate-API under the provider attribution requirements for public website use.
         </p>
-        
+
         <MarketDashboard />
       </div>
     </div>

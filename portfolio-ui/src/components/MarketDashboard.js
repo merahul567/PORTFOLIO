@@ -1,206 +1,124 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { axiosGet } from "../apiService";
 
+const widgetConfigs = [
+  { id: "tradingview-nifty", title: "Nifty 50", symbol: "NSE:NIFTY", description: "India" },
+  { id: "tradingview-bank-nifty", title: "Bank Nifty", symbol: "NSE:BANKNIFTY", description: "India" },
+  { id: "tradingview-sensex", title: "Sensex", symbol: "INDEXBOM:SENSEX", description: "India" },
+  { id: "tradingview-gold", title: "Gold", symbol: "MCX:GOLD1!", description: "MCX (INR)" },
+];
+
+const buildTradingViewUrl = (symbol) => {
+  const params = new URLSearchParams({
+    frameElementId: symbol.replace(/[\s:!]/g, "") + "-tv",
+    symbol,
+    interval: "D",
+    timezone: "Etc/UTC",
+    theme: "light",
+    style: "1",
+    locale: "en",
+    toolbarbg: "#f1f3f6",
+    enable_publishing: "false",
+    allow_symbol_change: "false",
+    details: "false",
+    hide_volume: "true",
+    hide_legend: "true",
+    saveimage: "false",
+    withdateranges: "true",
+  });
+
+  return `https://s.tradingview.com/widgetembed/?${params.toString()}`;
+};
+
 export default function MarketDashboard() {
-  const [marketData, setMarketData] = useState(null);
+  const [usdInr, setUsdInr] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
-    const fetchMarketData = async () => {
+    const fetchUsdInr = async () => {
       try {
         setLoading(true);
         setError(null);
         const data = await axiosGet("market/snapshot");
-        setMarketData(data);
-        setLastUpdated(new Date());
+        setUsdInr(data?.usdInr || null);
       } catch (err) {
-        console.error("Failed to fetch market data:", err);
-        setError("Unable to load market data. Please try again later.");
+        console.error("Failed to fetch USD/INR rate:", err);
+        setError("Unable to load the ExchangeRate-API rate. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMarketData();
-
-    // Refresh every 5 minutes
-    const interval = setInterval(fetchMarketData, 300000);
-
-    return () => clearInterval(interval);
+    fetchUsdInr();
   }, []);
 
-  const formatPrice = (price) => {
-    if (price === null || price === undefined) return "—";
-    return typeof price === "number"
-      ? price.toLocaleString("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      : price;
-  };
-
-  const formatChange = (change) => {
-    if (change === null || change === undefined) return "—";
-    const sign = change >= 0 ? "+" : "";
-    return `${sign}${formatPrice(change)}`;
-  };
-
-  const getChangeClass = (change) => {
-    if (change === null || change === undefined) return "";
-    return change >= 0 ? "positive" : "negative";
-  };
-
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp) return "—";
-    try {
-      const date = new Date(timestamp);
-      return date.toLocaleString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
-    } catch (e) {
-      return timestamp;
-    }
-  };
-
-  const formatLastUpdated = () => {
-    if (!lastUpdated) return "—";
-    const now = new Date();
-    const diff = Math.floor((now - lastUpdated) / 1000);
-
-    if (diff < 60) return "just now";
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-    return lastUpdated.toLocaleDateString();
-  };
-
-  const marketSections = [
-    {
-      title: "Indian Markets",
-      description: "Major indices for Indian equity markets",
-      instruments: ["nifty50", "sensex"],
-    },
-    {
-      title: "Global Markets",
-      description: "International stock market indices",
-      instruments: ["nasdaq"],
-    },
-    {
-      title: "Commodities & Currency",
-      description: "Precious metals and forex rates",
-      instruments: ["gold", "usdInr"],
-    },
-  ];
-
-  const instrumentLabels = {
-    gold: { name: "Gold", symbol: "XAU/USD" },
-    nifty50: { name: "Nifty 50", symbol: "^NSEI" },
-    sensex: { name: "Sensex", symbol: "^BSESN" },
-    nasdaq: { name: "NASDAQ", symbol: "^IXIC" },
-    usdInr: { name: "USD / INR", symbol: "USD/INR" },
-  };
-
-  if (error && !marketData) {
-    return (
-      <div className="market-error" style={{ marginTop: "2rem" }}>
-        <div style={{ padding: "2rem", textAlign: "center", color: "var(--muted)" }}>
-          <p>{error}</p>
-          <p style={{ fontSize: "0.85rem", marginTop: "1rem" }}>
-            The market data service may be temporarily unavailable. Please refresh to retry.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const rateText = usdInr && usdInr.currentPrice !== null && usdInr.currentPrice !== undefined
+    ? Number(usdInr.currentPrice).toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    : "—";
 
   return (
     <div className="market-dashboard">
       <div className="dashboard-header">
         <div>
-          <p className="dashboard-status">
-            {loading ? "Updating..." : "Data live"}
-          </p>
+          <p className="dashboard-status">{loading ? "Updating..." : "Live feed"}</p>
           <p className="dashboard-timestamp">
-            Last updated: {formatLastUpdated()}
+            {usdInr?.timestamp ? `Last updated: ${new Date(usdInr.timestamp).toLocaleString()}` : "ExchangeRate-API feed loading"}
           </p>
         </div>
       </div>
 
-      {marketSections.map((section) => (
-        <section key={section.title} className="market-section">
-          <div className="section-header">
-            <h2>{section.title}</h2>
-            <p>{section.description}</p>
+      <div className="market-rate-panel">
+        <div className="rate-header">
+          <div>
+            <span className="rate-label">USD / INR</span>
+            <h3>ExchangeRate-API reference rate</h3>
           </div>
+          <span className="rate-source">ExchangeRate-API</span>
+        </div>
 
-          <div className="market-cards-grid">
-            {section.instruments.map((instKey) => {
-              const data = marketData?.[instKey];
-              const label = instrumentLabels[instKey];
-              const isAvailable = data?.status === "Available";
+        {error ? (
+          <p className="rate-error">{error}</p>
+        ) : (
+          <>
+            <div className="rate-value">₹{rateText}</div>
+            <p className="rate-note">
+              Market rate is sourced from ExchangeRate-API and shown with required attribution for public website use.
+            </p>
+          </>
+        )}
+      </div>
 
-              return (
-                <div key={instKey} className="market-card">
-                  <div className="card-header">
-                    <h3>{label.name}</h3>
-                    <span className="card-symbol">{label.symbol}</span>
-                  </div>
-
-                  {isAvailable ? (
-                    <div className="card-content">
-                      <div className="price-section">
-                        <div className="price">{formatPrice(data.currentPrice)}</div>
-                        <div className={`change ${getChangeClass(data.change)}`}>
-                          <span className="change-value">
-                            {formatChange(data.change)}
-                          </span>
-                          <span className="change-percent">
-                            ({data.changePercent >= 0 ? "+" : ""}
-                            {formatPrice(data.changePercent)}%)
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="card-meta">
-                        <div className="meta-row">
-                          <span className="meta-label">Source</span>
-                          <span className="meta-value">{data.source}</span>
-                        </div>
-                        <div className="meta-row">
-                          <span className="meta-label">Updated</span>
-                          <span className="meta-value">{formatTimestamp(data.timestamp)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="card-unavailable">
-                      <p className="unavailable-text">Unavailable</p>
-                      <p className="unavailable-reason">No live feed configured</p>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+      <div className="market-widget-grid">
+        {widgetConfigs.map(({ id, title, description, symbol }) => (
+          <div key={id} className="tradingview-widget-card">
+            <div className="widget-card-header">
+              <h3>{title}</h3>
+              <span>{description}</span>
+            </div>
+            <div className="tradingview-widget">
+              <iframe
+                title={title}
+                src={buildTradingViewUrl(symbol)}
+                frameBorder="0"
+                scrolling="no"
+                allowTransparency="true"
+                style={{ width: "100%", height: "100%", border: 0 }}
+              />
+            </div>
           </div>
-        </section>
-      ))}
+        ))}
+      </div>
 
       <div className="dashboard-footer">
         <p className="note">
-          <strong>Data source:</strong> All market data is sourced from free public APIs
-          (Yahoo Finance, ExchangeRate API, Metals API). Data is cached server-side to minimize
-          external API calls.
+          <strong>Attribution:</strong> TradingView widgets are shown under TradingView attribution. The USD / INR rate is sourced from ExchangeRate-API.
         </p>
         <p className="note quiet">
-          <strong>Disclaimer:</strong> Market data is for informational purposes only. Not
-          intended for trading decisions. Prices may have a 15-30 minute delay depending on the
-          data source.
+          <strong>Disclaimer:</strong> Market charts and reference rates are informational only and are not investment advice.
         </p>
       </div>
     </div>

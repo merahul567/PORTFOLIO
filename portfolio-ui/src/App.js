@@ -11,7 +11,6 @@ const ToolsPage = lazy(() => import("./pages/ToolsPage"));
 const ToolDetailPage = lazy(() => import("./pages/ToolDetailPage"));
 const AiPage = lazy(() => import("./pages/AiPage"));
 const InsightsPage = lazy(() => import("./pages/InsightsPage"));
-const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
@@ -33,10 +32,8 @@ export default function App() {
           <Route path="/tools/:slug" element={<ToolDetailPage />} />
           <Route path="/ai" element={<AiPage />} />
           <Route path="/insights" element={<InsightsPage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/blog" element={<Navigate to="/insights" replace />} />
-          <Route path="/project" element={<Navigate to="/projects" replace />} />
           <Route path="/contact" element={<Navigate to="/about#contact" replace />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>

@@ -1,18 +1,16 @@
 package in.kumarrahul.portfolio.service;
 
-import in.kumarrahul.portfolio.client.AlphaVantageClient;
+import com.fasterxml.jackson.databind.JsonNode;
 import in.kumarrahul.portfolio.client.RapidApiClient;
-import in.kumarrahul.portfolio.client.YahooFinanceClient;
 import in.kumarrahul.portfolio.dto.MarketQuoteDTO;
 import in.kumarrahul.portfolio.dto.MarketSnapshotDTO;
 import in.kumarrahul.portfolio.entity.MarketData;
 import in.kumarrahul.portfolio.repository.MarketDataRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import com.fasterxml.jackson.databind.JsonNode;
-import jakarta.annotation.PostConstruct;
 
 import java.time.LocalDateTime;
 
@@ -21,178 +19,36 @@ import java.time.LocalDateTime;
 @Slf4j
 public class MarketDataService {
 
-    private final AlphaVantageClient alphaVantageClient;
     private final RapidApiClient rapidApiClient;
-    private final YahooFinanceClient yahooFinanceClient;
     private final MarketDataRepository marketDataRepository;
 
     @PostConstruct
     public void initializeMarketData() {
         log.info("================================");
-        log.info("Initializing market data on startup");
+        log.info("Initializing ExchangeRate-API market data on startup");
         log.info("================================");
         refreshMarketData();
     }
 
     public MarketSnapshotDTO getMarketSnapshot() {
-        log.info("Fetching market snapshot");
+        log.info("Fetching ExchangeRate-API market snapshot");
         MarketSnapshotDTO snapshot = new MarketSnapshotDTO();
-
-        snapshot.setGold(fetchGoldPrice());
-        snapshot.setNifty50(fetchNifty50());
-        snapshot.setSensex(fetchSensex());
-        snapshot.setNasdaq(fetchNASDAQ());
         snapshot.setUsdInr(fetchUsdInr());
-
+        snapshot.setNifty50(unavailableQuote("NIFTY 50", "NSE:NIFTY", "INDIA"));
+        snapshot.setBankNifty(unavailableQuote("Bank Nifty", "NSE:BANKNIFTY", "INDIA"));
+        snapshot.setSensex(unavailableQuote("Sensex", "INDEXBOM:SENSEX", "INDIA"));
+        snapshot.setGold(unavailableQuote("Gold", "MCX:GOLD1!", "COMMODITY"));
         return snapshot;
     }
 
-    private MarketQuoteDTO fetchGoldPrice() {
+    private MarketQuoteDTO unavailableQuote(String name, String symbol, String category) {
         MarketQuoteDTO quote = new MarketQuoteDTO();
-        quote.setSymbol("GOLD");
-        quote.setName("Gold");
-        quote.setCategory("COMMODITY");
+        quote.setName(name);
+        quote.setSymbol(symbol);
+        quote.setCategory(category);
+        quote.setStatus("Unavailable");
+        quote.setMessage("No live feed configured");
         quote.setTimestamp(LocalDateTime.now().toString());
-
-        try {
-            log.info("Attempting to fetch gold price from Metals.live...");
-            JsonNode data = rapidApiClient.getMetalsData();
-
-            if (data != null && data.has("gold")) {
-                double goldPrice = data.get("gold").asDouble();
-                quote.setCurrentPrice(goldPrice);
-                quote.setStatus("Available");
-                quote.setSource("Metals.live API");
-                quote.setChange(0.0);
-                quote.setChangePercent(0.0);
-
-                saveMarketData("GOLD", "COMMODITY", "Gold", goldPrice, 0.0, 0.0, "Metals.live");
-                log.info("✅ Gold price fetched successfully: ${}", goldPrice);
-            } else {
-                quote.setStatus("Unavailable");
-                quote.setMessage("No data available from API");
-                log.warn("⚠️ Gold API returned no data. Response: {}", data);
-            }
-        } catch (Exception e) {
-            log.error("❌ Error fetching gold price: {}", e.getMessage());
-            quote.setStatus("Unavailable");
-            quote.setMessage("Error: " + e.getMessage());
-        }
-
-        return quote;
-    }
-
-    private MarketQuoteDTO fetchNifty50() {
-        MarketQuoteDTO quote = new MarketQuoteDTO();
-        quote.setSymbol("^NSEI");
-        quote.setName("Nifty 50");
-        quote.setCategory("INDIA");
-        quote.setTimestamp(LocalDateTime.now().toString());
-
-        try {
-            log.info("Attempting to fetch Nifty 50 (^NSEI) from Finnhub...");
-            JsonNode data = yahooFinanceClient.getStockQuote("^NSEI");
-
-            if (data != null && data.has("c")) {
-                double price = data.get("c").asDouble();
-                double change = data.has("d") ? data.get("d").asDouble() : 0.0;
-                double changePercent = data.has("dp") ? data.get("dp").asDouble() : 0.0;
-
-                quote.setCurrentPrice(price);
-                quote.setChange(change);
-                quote.setChangePercent(changePercent);
-                quote.setStatus("Available");
-                quote.setSource("Finnhub API");
-
-                saveMarketData("^NSEI", "INDIA", "Nifty 50", price, change, changePercent, "Finnhub");
-                log.info("✅ Nifty 50 fetched successfully: {} (Change: {} / {}%)", price, change, changePercent);
-            } else {
-                quote.setStatus("Unavailable");
-                quote.setMessage("No data available from API");
-                log.warn("⚠️ Nifty 50 API returned no data. Response: {}", data);
-            }
-        } catch (Exception e) {
-            log.error("❌ Error fetching Nifty 50: {}", e.getMessage());
-            quote.setStatus("Unavailable");
-            quote.setMessage("Error: " + e.getMessage());
-        }
-
-        return quote;
-    }
-
-    private MarketQuoteDTO fetchSensex() {
-        MarketQuoteDTO quote = new MarketQuoteDTO();
-        quote.setSymbol("^BSESN");
-        quote.setName("Sensex");
-        quote.setCategory("INDIA");
-        quote.setTimestamp(LocalDateTime.now().toString());
-
-        try {
-            log.info("Attempting to fetch Sensex (^BSESN) from Finnhub...");
-            JsonNode data = yahooFinanceClient.getStockQuote("^BSESN");
-
-            if (data != null && data.has("c")) {
-                double price = data.get("c").asDouble();
-                double change = data.has("d") ? data.get("d").asDouble() : 0.0;
-                double changePercent = data.has("dp") ? data.get("dp").asDouble() : 0.0;
-
-                quote.setCurrentPrice(price);
-                quote.setChange(change);
-                quote.setChangePercent(changePercent);
-                quote.setStatus("Available");
-                quote.setSource("Finnhub API");
-
-                saveMarketData("^BSESN", "INDIA", "Sensex", price, change, changePercent, "Finnhub");
-                log.info("✅ Sensex fetched successfully: {} (Change: {} / {}%)", price, change, changePercent);
-            } else {
-                quote.setStatus("Unavailable");
-                quote.setMessage("No data available from API");
-                log.warn("⚠️ Sensex API returned no data. Response: {}", data);
-            }
-        } catch (Exception e) {
-            log.error("❌ Error fetching Sensex: {}", e.getMessage());
-            quote.setStatus("Unavailable");
-            quote.setMessage("Error: " + e.getMessage());
-        }
-
-        return quote;
-    }
-
-    private MarketQuoteDTO fetchNASDAQ() {
-        MarketQuoteDTO quote = new MarketQuoteDTO();
-        quote.setSymbol("^IXIC");
-        quote.setName("NASDAQ");
-        quote.setCategory("GLOBAL");
-        quote.setTimestamp(LocalDateTime.now().toString());
-
-        try {
-            log.info("Attempting to fetch NASDAQ (^IXIC) from Finnhub...");
-            JsonNode data = yahooFinanceClient.getStockQuote("^IXIC");
-
-            if (data != null && data.has("c")) {
-                double price = data.get("c").asDouble();
-                double change = data.has("d") ? data.get("d").asDouble() : 0.0;
-                double changePercent = data.has("dp") ? data.get("dp").asDouble() : 0.0;
-
-                quote.setCurrentPrice(price);
-                quote.setChange(change);
-                quote.setChangePercent(changePercent);
-                quote.setStatus("Available");
-                quote.setSource("Finnhub API");
-
-                saveMarketData("^IXIC", "GLOBAL", "NASDAQ", price, change, changePercent, "Finnhub");
-                log.info("✅ NASDAQ fetched successfully: {} (Change: {} / {}%)", price, change, changePercent);
-            } else {
-                quote.setStatus("Unavailable");
-                quote.setMessage("No data available from API");
-                log.warn("⚠️ NASDAQ API returned no data. Response: {}", data);
-            }
-        } catch (Exception e) {
-            log.error("❌ Error fetching NASDAQ: {}", e.getMessage());
-            quote.setStatus("Unavailable");
-            quote.setMessage("Error: " + e.getMessage());
-        }
-
         return quote;
     }
 
@@ -204,22 +60,22 @@ public class MarketDataService {
         quote.setTimestamp(LocalDateTime.now().toString());
 
         try {
-            log.info("Attempting to fetch USD/INR from ExchangeRate API...");
+            log.info("Attempting to fetch USD/INR from ExchangeRate-API...");
             JsonNode data = rapidApiClient.getForexData("USD", "INR");
 
-            if (data != null && data.has("rates")) {
-                double rate = data.get("rates").get("INR").asDouble();
+            if (data != null && data.has("conversion_rates") && data.get("conversion_rates").has("INR")) {
+                double rate = data.get("conversion_rates").get("INR").asDouble();
                 quote.setCurrentPrice(rate);
                 quote.setStatus("Available");
-                quote.setSource("ExchangeRate API");
+                quote.setSource("ExchangeRate-API");
                 quote.setChange(0.0);
                 quote.setChangePercent(0.0);
 
-                saveMarketData("USD/INR", "CURRENCY", "USD / INR", rate, 0.0, 0.0, "ExchangeRate API");
+                saveMarketData("USD/INR", "CURRENCY", "USD / INR", rate, 0.0, 0.0, "ExchangeRate-API");
                 log.info("✅ USD/INR fetched successfully: {}", rate);
             } else {
                 quote.setStatus("Unavailable");
-                quote.setMessage("No data available from API");
+                quote.setMessage("No data available from ExchangeRate-API");
                 log.warn("⚠️ USD/INR API returned no data. Response: {}", data);
             }
         } catch (Exception e) {
@@ -253,21 +109,17 @@ public class MarketDataService {
         }
     }
 
-    @Scheduled(fixedDelay = 300000) // 5 minutes
+    @Scheduled(fixedDelay = 300000)
     public void refreshMarketData() {
         log.info("================================");
-        log.info("⏰ SCHEDULED REFRESH: Refreshing market data (runs every 5 minutes)");
+        log.info("⏰ SCHEDULED REFRESH: Refreshing ExchangeRate-API data");
         log.info("================================");
         try {
             MarketSnapshotDTO snapshot = getMarketSnapshot();
-            log.info("================================");
-            log.info("✅ Market data refresh completed successfully");
-            log.info("Gold: {}", snapshot.getGold().getStatus());
-            log.info("Nifty 50: {}", snapshot.getNifty50().getStatus());
-            log.info("Sensex: {}", snapshot.getSensex().getStatus());
-            log.info("NASDAQ: {}", snapshot.getNasdaq().getStatus());
-            log.info("USD/INR: {}", snapshot.getUsdInr().getStatus());
-            log.info("================================");
+            log.info("✅ Market snapshot refreshed with ExchangeRate-API data");
+            if (snapshot.getUsdInr() != null) {
+                log.info("USD/INR: {}", snapshot.getUsdInr().getStatus());
+            }
         } catch (Exception e) {
             log.error("❌ Error in scheduled market data refresh: {}", e.getMessage(), e);
         }

@@ -16,7 +16,6 @@ export default function SiteFooter() {
             <Link to="/markets">Markets</Link>
             <Link to="/tools">Tools</Link>
             <Link to="/insights">Insights</Link>
-            <Link to="/projects">Projects</Link>
           </div>
           <div className="footer-links">
             <Link to="/about">About</Link>

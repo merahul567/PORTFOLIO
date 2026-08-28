@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MarketSnapshotDTO {
-    private MarketQuoteDTO gold;
-    private MarketQuoteDTO nifty50;
-    private MarketQuoteDTO sensex;
-    private MarketQuoteDTO nasdaq;
     private MarketQuoteDTO usdInr;
+    private MarketQuoteDTO nifty50;
+    private MarketQuoteDTO bankNifty;
+    private MarketQuoteDTO sensex;
+    private MarketQuoteDTO gold;
 }

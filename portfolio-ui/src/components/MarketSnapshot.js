@@ -1,6 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { axiosGet } from "../apiService";
 
+const instruments = [
+  { key: "gold", label: "Gold" },
+  { key: "nifty50", label: "Nifty 50" },
+  { key: "bankNifty", label: "Bank Nifty" },
+  { key: "sensex", label: "Sensex" },
+];
+
+const formatValue = (value) => {
+  if (value === null || value === undefined) return "—";
+  return Number(value).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
+const formatSigned = (value) => {
+  if (value === null || value === undefined) return "—";
+  const sign = value >= 0 ? "+" : "";
+  return `${sign}${formatValue(value)}`;
+};
+
 export default function MarketSnapshot() {
   const [marketData, setMarketData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -12,105 +33,64 @@ export default function MarketSnapshot() {
         setLoading(true);
         setError(null);
         const data = await axiosGet("market/snapshot");
-        setMarketData(data);
+        setMarketData(data || null);
       } catch (err) {
         console.error("Failed to fetch market data:", err);
-        setError("Failed to load market data");
+        setError("Exchange rate feed is temporarily unavailable.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchMarketData();
-
-    // Refresh every 5 minutes
     const interval = setInterval(fetchMarketData, 300000);
-
     return () => clearInterval(interval);
   }, []);
 
-  const formatPrice = (price) => {
-    if (price === null || price === undefined) return "—";
-    return price.toFixed(2);
-  };
+  const usdQuote = marketData?.usdInr;
+  const usdRate = usdQuote?.status === "Available" ? formatValue(usdQuote.currentPrice) : "—";
 
-  const formatChange = (change, changePercent) => {
-    if (change === null || change === undefined) return "—";
-    const sign = change >= 0 ? "+" : "";
-    return `${sign}${formatPrice(change)} (${sign}${changePercent?.toFixed(2) || "0.00"}%)`;
-  };
+  const rows = instruments.map((item) => {
+    const data = marketData?.[item.key];
+    const hasData = data?.status === "Available";
+    const price = hasData ? formatValue(data.currentPrice) : "—";
+    const change = hasData && data.change !== null && data.change !== undefined
+      ? `${formatSigned(data.change)} (${formatSigned(data.changePercent)}%)`
+      : "—";
 
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp) return "";
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+    let trend = "neutral";
+    if (hasData && data.changePercent !== null && data.changePercent !== undefined) {
+      trend = Number(data.changePercent) >= 0 ? "up" : "down";
+    }
 
-  if (loading && !marketData) {
-    return (
-      <div className="snapshot-grid">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <article key={i} className="snapshot-card">
-            <div className="snapshot-region">Loading...</div>
-            <h3>—</h3>
-            <div className="snapshot-value">—</div>
-            <div className="snapshot-meta">Loading data...</div>
-          </article>
-        ))}
-      </div>
-    );
-  }
-
-  if (error && !marketData) {
-    return (
-      <div className="snapshot-grid">
-        <div style={{ gridColumn: "1 / -1", padding: "1rem", color: "var(--muted)" }}>
-          {error}
-        </div>
-      </div>
-    );
-  }
-
-  const instruments = [
-    { key: "gold", label: "Gold", region: "COMMODITIES", source: "Metals API" },
-    { key: "nifty50", label: "Nifty 50", region: "INDIA", source: "Yahoo Finance" },
-    { key: "sensex", label: "Sensex", region: "INDIA", source: "Yahoo Finance" },
-    { key: "nasdaq", label: "NASDAQ", region: "GLOBAL", source: "Yahoo Finance" },
-    { key: "usdInr", label: "USD / INR", region: "CURRENCY", source: "ExchangeRate API" },
-  ];
+    return { ...item, price, change, trend };
+  });
 
   return (
-    <div className="snapshot-grid">
-      {instruments.map((inst) => {
-        const data = marketData?.[inst.key];
-        const isAvailable = data?.status === "Available";
+    <div className="market-summary-shell">
+      <div className="market-summary-card market-summary-rate">
+        <div className="summary-heading">USD / INR</div>
+        <div className="summary-rate">₹{usdRate}</div>
+        <div className="summary-subtitle">
+          {error ? "Feed unavailable" : loading ? "Updating..." : "ExchangeRate-API"}
+        </div>
+      </div>
 
-        return (
-          <article key={inst.key} className="snapshot-card">
-            <div className="snapshot-region">{inst.region}</div>
-            <h3>{inst.label}</h3>
-            <div className="snapshot-value">
-              {isAvailable ? `${formatPrice(data.currentPrice)}` : "Unavailable"}
+      <div className="market-summary-card market-summary-ticker">
+        <div className="ticker-header">MARKET SNAPSHOT</div>
+        <div className="ticker-grid">
+          {rows.map((row) => (
+            <div key={row.key} className="ticker-row">
+              <span className="ticker-name">{row.label}</span>
+              <span className="ticker-value">{row.price}</span>
+              <span className={`ticker-change ${row.trend}`}>
+                {row.change}
+              </span>
             </div>
-            <div className="snapshot-meta">
-              {isAvailable ? (
-                <>
-                  {formatChange(data.change, data.changePercent)}
-                  <br />
-                  {formatTimestamp(data.timestamp)} · {inst.source}
-                </>
-              ) : (
-                "No live feed configured"
-              )}
-            </div>
-          </article>
-        );
-      })}
+          ))}
+        </div>
+        <div className="ticker-footer">Powered by TradingView</div>
+      </div>
     </div>
   );
 }

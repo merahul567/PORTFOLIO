@@ -13,11 +13,8 @@ public class SpaController {
             "/ai",
             "/insights",
             "/insights/**",
-            "/projects",
-            "/projects/**",
             "/about",
             "/blog",
-            "/project",
             "/contact"
     })
     public String forward() {
