@@ -22,8 +22,8 @@ COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
 # ---------- Runtime Stage ----------
-# Use Eclipse Temurin JRE 17 for lightweight runtime
-FROM eclipse-temurin:17-jre
+# Use Eclipse Temurin JRE 21 for lightweight runtime
+FROM eclipse-temurin:21-jre
 
 # Set working directory
 WORKDIR /app
