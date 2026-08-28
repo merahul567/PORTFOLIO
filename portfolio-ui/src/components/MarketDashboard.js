@@ -1,36 +1,39 @@
 import React, { useState, useEffect, useRef } from "react";
 import { axiosGet } from "../apiService";
+import "./MarketDashboard.css";
 
 const widgetConfigs = [
   { id: "tradingview-nasdaq", title: "NASDAQ 100 Index", symbol: "CAPITALCOM:US100", description: "US Tech Benchmark (USD)" },
   { id: "tradingview-bitcoin", title: "Bitcoin", symbol: "BINANCE:BTCUSDT", description: "Crypto Token (USD)" },
-  { id: "tradingview-gold-global", title: "Gold (Spot)", symbol: "OANDA:XAUUSD", description: "Global Spot Gold (USD)" },
+  { id: "tradingview-gold-global", title: "Gold", symbol: "OANDA:XAUUSD", description: "Global Spot Gold (USD)" },
 ];
 
 const DashboardChartCard = (props) => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
     let cancelled = false;
+    let retryTimer;
     const targetId = props.id + "-container-dashboard";
 
     const init = () => {
       if (cancelled) return;
       if (!window.TradingView) {
         // poll until TradingView SDK is available (short timeout)
-        setTimeout(init, 250);
+        retryTimer = setTimeout(init, 250);
         return;
       }
 
-      containerRef.current.innerHTML = "";
+      container.innerHTML = "";
 
       const innerDiv = document.createElement("div");
       innerDiv.id = targetId;
       innerDiv.style.width = "100%";
       innerDiv.style.height = "100%";
-      containerRef.current.appendChild(innerDiv);
+      container.appendChild(innerDiv);
 
       // Use the official widget constructor to match the SDK
       new window.TradingView.widget({
@@ -55,7 +58,8 @@ const DashboardChartCard = (props) => {
 
     return () => {
       cancelled = true;
-      if (containerRef.current) containerRef.current.innerHTML = "";
+      clearTimeout(retryTimer);
+      container.innerHTML = "";
     };
   }, [props.id, props.symbol]);
 
@@ -64,14 +68,13 @@ const DashboardChartCard = (props) => {
     { className: "tradingview-widget-card" },
     React.createElement(
       "div",
-      { className: "widget-card-header", style: { padding: "1rem 1.2rem 0.5rem", display: "flex", justifyContent: "space-between", alignItems: "baseline" } },
-      React.createElement("h3", { style: { fontSize: "1.1rem", fontWeight: "600", margin: 0 } }, props.title),
-      React.createElement("span", { style: { fontSize: "0.75rem", color: "var(--muted)" } }, props.description)
+      { className: "widget-card-header" },
+      React.createElement("h3", null, props.title),
+      React.createElement("span", null, props.description)
     ),
     React.createElement("div", {
       className: "tradingview-widget",
-      ref: containerRef,
-      style: { width: "100%", height: "340px", display: "block", background: "transparent" }
+      ref: containerRef
     })
   );
 };
@@ -127,23 +130,22 @@ export default function MarketDashboard() {
         : React.createElement(
             "div",
             { 
-              className: "dashboard-rate-row-grid",
-              style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem", marginTop: "1rem" } 
+              className: "dashboard-rate-row-grid"
             },
             
-            React.createElement("div", { style: { borderRight: "1px dashed var(--line)", paddingRight: "1rem" } },
-              React.createElement("span", { style: { fontSize: "0.75rem", textTransform: "uppercase", color: "var(--faint)", fontWeight: "600" } }, "USD / INR"),
-              React.createElement("div", { className: "rate-value", style: { fontSize: "1.9rem", marginTop: "4px" } }, "₹" + formatRate(marketData?.usdInr))
+            React.createElement("div", { className: "dashboard-rate-item" },
+              React.createElement("span", { className: "dashboard-rate-label" }, "USD / INR"),
+              React.createElement("div", { className: "rate-value" }, "₹" + formatRate(marketData?.usdInr))
             ),
             
-            React.createElement("div", { style: { borderRight: "1px dashed var(--line)", paddingRight: "1rem" } },
-              React.createElement("span", { style: { fontSize: "0.75rem", textTransform: "uppercase", color: "var(--faint)", fontWeight: "600" } }, "EUR / INR"),
-              React.createElement("div", { className: "rate-value", style: { fontSize: "1.9rem", marginTop: "4px" } }, "₹" + formatRate(marketData?.eurInr))
+            React.createElement("div", { className: "dashboard-rate-item" },
+              React.createElement("span", { className: "dashboard-rate-label" }, "EUR / INR"),
+              React.createElement("div", { className: "rate-value" }, "₹" + formatRate(marketData?.eurInr))
             ),
             
-            React.createElement("div", null,
-              React.createElement("span", { style: { fontSize: "0.75rem", textTransform: "uppercase", color: "var(--faint)", fontWeight: "600" } }, "GBP / INR"),
-              React.createElement("div", { className: "rate-value", style: { fontSize: "1.9rem", marginTop: "4px" } }, "₹" + formatRate(marketData?.gbpInr))
+            React.createElement("div", { className: "dashboard-rate-item" },
+              React.createElement("span", { className: "dashboard-rate-label" }, "GBP / INR"),
+              React.createElement("div", { className: "rate-value" }, "₹" + formatRate(marketData?.gbpInr))
             )
           )
     ),
@@ -158,8 +160,8 @@ export default function MarketDashboard() {
 
     React.createElement(
       "div",
-      { className: "dashboard-footer", style: { marginTop: "2rem", borderTop: "1px solid var(--line)", paddingTop: "1rem" } },
-      React.createElement("p", { className: "note", style: { fontSize: "0.8rem", color: "var(--muted)" } }, "Charts generated natively via TradingView Client Web Framework interfaces.")
+      { className: "dashboard-footer" },
+      React.createElement("p", { className: "note" }, "Charts generated natively via TradingView Client Web Framework interfaces.")
     )
   );
 }

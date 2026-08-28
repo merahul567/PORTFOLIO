@@ -14,7 +14,7 @@ export default function MarketsPage() {
         <p className="page-kicker">Market intelligence</p>
         <h1 className="page-title">Market dashboard</h1>
         <p className="page-lead">
-          TradingView widgets display the market charts, while the USD / INR reference rate is sourced from ExchangeRate-API under the provider attribution requirements for public website use.
+          TradingView widgets display the market charts, while the Exchange reference rate is sourced from ExchangeRate-API under the provider attribution requirements for public website use.
         </p>
 
         <MarketDashboard />

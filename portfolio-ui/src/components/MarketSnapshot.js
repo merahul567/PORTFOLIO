@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { axiosGet } from "../apiService";
+import "./MarketSnapshot.css";
 
 export const snapshotInstruments = [
-  { id: "nifty50", label: "Nifty 50", symbol: "CAPITALCOM:US100", customLabel: "NASDAQ 100" }, 
-  { id: "bankNifty", label: "Bank Nifty", symbol: "BINANCE:BTCUSDT", customLabel: "Bitcoin" }, 
-  { id: "gold", label: "Gold", symbol: "OANDA:XAUUSD", customLabel: "Gold (Spot)" },
+  { id: "nasdaq100", label: "NASDAQ 100", symbol: "CAPITALCOM:US100", customLabel: "NASDAQ 100" }, 
+  { id: "bitcoin", label: "Bitcoin", symbol: "BINANCE:BTCUSDT", customLabel: "Bitcoin" }, 
+  { id: "gold", label: "Gold", symbol: "OANDA:XAUUSD", customLabel: "Gold" },
 ];
 
 export default function MarketSnapshot() {
@@ -32,25 +33,27 @@ export default function MarketSnapshot() {
   }, []);
 
   useEffect(() => {
-    if (!tickerRef.current) return;
+    const ticker = tickerRef.current;
+    if (!ticker) return;
 
     let cancelled = false;
+    let retryTimer;
     const targetId = "tradingview-snapshot-ticker-inner";
 
     const init = () => {
       if (cancelled) return;
       if (!window.TradingView) {
-        setTimeout(init, 250);
+        retryTimer = setTimeout(init, 250);
         return;
       }
 
-      tickerRef.current.innerHTML = "";
+      ticker.innerHTML = "";
 
       const innerDiv = document.createElement("div");
       innerDiv.id = targetId;
       innerDiv.style.width = "100%";
       innerDiv.style.height = "100%";
-      tickerRef.current.appendChild(innerDiv);
+      ticker.appendChild(innerDiv);
 
       const activeSymbols = snapshotInstruments.map(item => [item.customLabel, item.symbol]);
 
@@ -74,9 +77,10 @@ export default function MarketSnapshot() {
 
     return () => {
       cancelled = true;
-      if (tickerRef.current) tickerRef.current.innerHTML = "";
+      clearTimeout(retryTimer);
+      ticker.innerHTML = "";
     };
-  }, [marketData]); 
+  }, []); 
 
   const formatRate = (obj) => {
     if (!obj || obj.currentPrice === null || obj.currentPrice === undefined) return "—";
@@ -89,28 +93,28 @@ export default function MarketSnapshot() {
     
     React.createElement(
       "div",
-      { className: "market-summary-card market-summary-rate", style: { padding: "1.1rem" } },
+      { className: "market-summary-card market-summary-rate" },
       React.createElement("div", { className: "summary-heading" }, "FOREX RATES (INR)"),
       
       React.createElement(
-        "div",
-        { style: { display: "flex", flexDirection: "column", gap: "0.85rem", marginTop: "1rem" } },
+        "dl",
+        { className: "snapshot-rates" },
         
-        React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "baseline", borderBottom: "1px dashed var(--line)", paddingBottom: "4px" } },
-          React.createElement("span", { style: { fontSize: "0.85rem", fontWeight: "600", color: "var(--ink)" } }, "USD / INR"),
-          React.createElement("span", { style: { fontSize: "1.1rem", fontFamily: "var(--font-mono)", fontWeight: "700" } }, "₹" + formatRate(marketData?.usdInr))
+        React.createElement("div", { className: "snapshot-rate-row" },
+          React.createElement("dt", null, "USD / INR"),
+          React.createElement("dd", null, "₹" + formatRate(marketData?.usdInr))
         ),
-        React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "baseline", borderBottom: "1px dashed var(--line)", paddingBottom: "4px" } },
-          React.createElement("span", { style: { fontSize: "0.85rem", fontWeight: "600", color: "var(--ink)" } }, "EUR / INR"),
-          React.createElement("span", { style: { fontSize: "1.1rem", fontFamily: "var(--font-mono)", fontWeight: "700" } }, "₹" + formatRate(marketData?.eurInr))
+        React.createElement("div", { className: "snapshot-rate-row" },
+          React.createElement("dt", null, "EUR / INR"),
+          React.createElement("dd", null, "₹" + formatRate(marketData?.eurInr))
         ),
-        React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "baseline" } },
-          React.createElement("span", { style: { fontSize: "0.85rem", fontWeight: "600", color: "var(--ink)" } }, "GBP / INR"),
-          React.createElement("span", { style: { fontSize: "1.1rem", fontFamily: "var(--font-mono)", fontWeight: "700" } }, "₹" + formatRate(marketData?.gbpInr))
+        React.createElement("div", { className: "snapshot-rate-row" },
+          React.createElement("dt", null, "GBP / INR"),
+          React.createElement("dd", null, "₹" + formatRate(marketData?.gbpInr))
         )
       ),
       
-      React.createElement("div", { className: "summary-subtitle", style: { marginTop: "1rem" } }, error ? error : loading ? "Updating..." : "ExchangeRate-API Reference")
+      React.createElement("div", { className: "summary-subtitle" }, error ? error : loading ? "Updating..." : "ExchangeRate-API Reference")
     ),
 
     React.createElement(
