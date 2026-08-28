@@ -1,126 +1,185 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { axiosGet } from "../apiService";
 
 const widgetConfigs = [
-  { id: "tradingview-nifty", title: "Nifty 50", symbol: "NSE:NIFTY", description: "India" },
-  { id: "tradingview-bank-nifty", title: "Bank Nifty", symbol: "NSE:BANKNIFTY", description: "India" },
-  { id: "tradingview-sensex", title: "Sensex", symbol: "INDEXBOM:SENSEX", description: "India" },
-  { id: "tradingview-gold", title: "Gold", symbol: "MCX:GOLD1!", description: "MCX (INR)" },
+  { id: "tradingview-nasdaq", title: "NASDAQ 100 Index", symbol: "CAPITALCOM:US100", description: "US Tech Benchmark (USD)" },
+  { id: "tradingview-bitcoin", title: "Bitcoin", symbol: "BINANCE:BTCUSDT", description: "Crypto Token (USD)" },
+  { id: "tradingview-gold-global", title: "Gold (Spot)", symbol: "OANDA:XAUUSD", description: "Global Spot Gold (USD)" },
 ];
 
-const buildTradingViewUrl = (symbol) => {
-  const params = new URLSearchParams({
-    frameElementId: symbol.replace(/[\s:!]/g, "") + "-tv",
-    symbol,
-    interval: "D",
-    timezone: "Etc/UTC",
-    theme: "light",
-    style: "1",
-    locale: "en",
-    toolbarbg: "#f1f3f6",
-    enable_publishing: "false",
-    allow_symbol_change: "false",
-    details: "false",
-    hide_volume: "true",
-    hide_legend: "true",
-    saveimage: "false",
-    withdateranges: "true",
-  });
+const loadTradingViewScript = (callback) => {
+  if (window.TradingView) {
+    callback();
+    return;
+  }
 
-  return `https://s.tradingview.com/widgetembed/?${params.toString()}`;
+  let script = document.getElementById("tradingview-js-sdk");
+  if (!script) {
+    script = document.createElement("script");
+    script.id = "tradingview-js-sdk";
+    script.src = "https://tradingview.com";
+    script.type = "text/javascript";
+    script.async = true;
+    document.head.appendChild(script);
+  }
+
+  const existingOnload = script.onload;
+  script.onload = () => {
+    if (existingOnload) existingOnload();
+    callback();
+  };
+};
+
+const DashboardChartCard = (props) => {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    let widgetInstance = null;
+
+    loadTradingViewScript(() => {
+      if (!containerRef.current || !window.TradingView) return;
+      containerRef.current.innerHTML = ""; 
+
+      const targetId = props.id + "-container-dashboard";
+      const innerDiv = document.createElement("div");
+      innerDiv.id = targetId;
+      innerDiv.style.width = "100%";
+      innerDiv.style.height = "100%";
+      containerRef.current.appendChild(innerDiv);
+
+      widgetInstance = new window.TradingView.widget({
+        container_id: targetId,
+        symbol: props.symbol,
+        width: "100%",
+        height: "100%",
+        interval: "D",
+        timezone: "Asia/Kolkata",
+        theme: "light",
+        style: "1",
+        locale: "en",
+        enable_publishing: false,
+        allow_symbol_change: false,
+        hide_legend: true,
+        hide_volume: true,
+        withdateranges: true,
+      });
+    });
+
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.innerHTML = "";
+      }
+      widgetInstance = null;
+    };
+  }, [props.id, props.symbol]);
+
+  return React.createElement(
+    "div",
+    { className: "tradingview-widget-card" },
+    React.createElement(
+      "div",
+      { className: "widget-card-header", style: { padding: "1rem 1.2rem 0.5rem", display: "flex", justifyContent: "space-between", alignItems: "baseline" } },
+      React.createElement("h3", { style: { fontSize: "1.1rem", fontWeight: "600", margin: 0 } }, props.title),
+      React.createElement("span", { style: { fontSize: "0.75rem", color: "var(--muted)" } }, props.description)
+    ),
+    React.createElement("div", {
+      className: "tradingview-widget",
+      ref: containerRef,
+      style: { width: "100%", height: "340px", display: "block", background: "transparent" }
+    })
+  );
 };
 
 export default function MarketDashboard() {
-  const [usdInr, setUsdInr] = useState(null);
+  const [marketData, setMarketData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchUsdInr = async () => {
+    const fetchMarketSnapshot = async () => {
       try {
         setLoading(true);
         setError(null);
         const data = await axiosGet("market/snapshot");
-        setUsdInr(data?.usdInr || null);
+        setMarketData(data || null);
       } catch (err) {
-        console.error("Failed to fetch USD/INR rate:", err);
-        setError("Unable to load the ExchangeRate-API rate. Please try again later.");
+        console.error("Failed to fetch dashboard forex data:", err);
+        setError("Unable to load references. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
-
-    fetchUsdInr();
+    fetchMarketSnapshot();
   }, []);
 
-  const rateText = usdInr && usdInr.currentPrice !== null && usdInr.currentPrice !== undefined
-    ? Number(usdInr.currentPrice).toLocaleString("en-IN", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    : "—";
+  const formatRate = (obj) => {
+    if (!obj || obj.currentPrice === null || obj.currentPrice === undefined) return "—";
+    return Number(obj.currentPrice).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
 
-  return (
-    <div className="market-dashboard">
-      <div className="dashboard-header">
-        <div>
-          <p className="dashboard-status">{loading ? "Updating..." : "Live feed"}</p>
-          <p className="dashboard-timestamp">
-            {usdInr?.timestamp ? `Last updated: ${new Date(usdInr.timestamp).toLocaleString()}` : "ExchangeRate-API feed loading"}
-          </p>
-        </div>
-      </div>
+  return React.createElement(
+    "div",
+    { className: "market-dashboard" },
+    
+    // 📊 FIXED: Enhanced 3-column reference rate layout card panel
+    React.createElement(
+      "div",
+      { className: "market-rate-panel" },
+      React.createElement(
+        "div",
+        { className: "rate-header" },
+        React.createElement(
+          "div",
+          null,
+          React.createElement("span", { className: "rate-label" }, "LIVE REFERENCE RATES"),
+          React.createElement("h3", null, "ExchangeRate-API Reference Indexes")
+        ),
+        React.createElement("span", { className: "rate-source" }, loading ? "Syncing..." : "Live feed active")
+      ),
+      
+      error 
+        ? React.createElement("p", { className: "rate-error" }, error)
+        : // Grid block displaying USD, EUR, and GBP dynamically side-by-side
+          React.createElement(
+            "div",
+            { 
+              className: "dashboard-rate-row-grid",
+              style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem", marginTop: "1rem" } 
+            },
+            
+            // USD Display Cell
+            React.createElement("div", { style: { borderRight: "1px dashed var(--line)", paddingRight: "1rem" } },
+              React.createElement("span", { style: { fontSize: "0.75rem", textTransform: "uppercase", color: "var(--faint)", fontWeight: "600" } }, "USD / INR"),
+              React.createElement("div", { className: "rate-value", style: { fontSize: "1.9rem", marginTop: "4px" } }, "₹" + formatRate(marketData?.usdInr))
+            ),
+            
+            // EUR Display Cell
+            React.createElement("div", { style: { borderRight: "1px dashed var(--line)", paddingRight: "1rem" } },
+              React.createElement("span", { style: { fontSize: "0.75rem", textTransform: "uppercase", color: "var(--faint)", fontWeight: "600" } }, "EUR / INR"),
+              React.createElement("div", { className: "rate-value", style: { fontSize: "1.9rem", marginTop: "4px" } }, "₹" + formatRate(marketData?.eurInr))
+            ),
+            
+            // GBP Display Cell
+            React.createElement("div", null,
+              React.createElement("span", { style: { fontSize: "0.75rem", textTransform: "uppercase", color: "var(--faint)", fontWeight: "600" } }, "GBP / INR"),
+              React.createElement("div", { className: "rate-value", style: { fontSize: "1.9rem", marginTop: "4px" } }, "₹" + formatRate(marketData?.gbpInr))
+            )
+          )
+    ),
 
-      <div className="market-rate-panel">
-        <div className="rate-header">
-          <div>
-            <span className="rate-label">USD / INR</span>
-            <h3>ExchangeRate-API reference rate</h3>
-          </div>
-          <span className="rate-source">ExchangeRate-API</span>
-        </div>
+    // Multi-Widget Charts Grid Loop Layout Block
+    React.createElement(
+      "div",
+      { className: "market-widget-grid" },
+      widgetConfigs.map((config) =>
+        React.createElement(DashboardChartCard, Object.assign({ key: config.id }, config))
+      )
+    ),
 
-        {error ? (
-          <p className="rate-error">{error}</p>
-        ) : (
-          <>
-            <div className="rate-value">₹{rateText}</div>
-            <p className="rate-note">
-              Market rate is sourced from ExchangeRate-API and shown with required attribution for public website use.
-            </p>
-          </>
-        )}
-      </div>
-
-      <div className="market-widget-grid">
-        {widgetConfigs.map(({ id, title, description, symbol }) => (
-          <div key={id} className="tradingview-widget-card">
-            <div className="widget-card-header">
-              <h3>{title}</h3>
-              <span>{description}</span>
-            </div>
-            <div className="tradingview-widget">
-              <iframe
-                title={title}
-                src={buildTradingViewUrl(symbol)}
-                frameBorder="0"
-                scrolling="no"
-                allowTransparency="true"
-                style={{ width: "100%", height: "100%", border: 0 }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="dashboard-footer">
-        <p className="note">
-          <strong>Attribution:</strong> TradingView widgets are shown under TradingView attribution. The USD / INR rate is sourced from ExchangeRate-API.
-        </p>
-        <p className="note quiet">
-          <strong>Disclaimer:</strong> Market charts and reference rates are informational only and are not investment advice.
-        </p>
-      </div>
-    </div>
+    React.createElement(
+      "div",
+      { className: "dashboard-footer", style: { marginTop: "2rem", borderTop: "1px solid var(--line)", paddingTop: "1rem" } },
+      React.createElement("p", { className: "note", style: { fontSize: "0.8rem", color: "var(--muted)" } }, "Charts generated natively via TradingView Client Web Framework interfaces.")
+    )
   );
 }
