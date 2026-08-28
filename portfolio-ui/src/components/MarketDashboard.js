@@ -7,47 +7,33 @@ const widgetConfigs = [
   { id: "tradingview-gold-global", title: "Gold (Spot)", symbol: "OANDA:XAUUSD", description: "Global Spot Gold (USD)" },
 ];
 
-const loadTradingViewScript = (callback) => {
-  if (window.TradingView) {
-    callback();
-    return;
-  }
-
-  let script = document.getElementById("tradingview-js-sdk");
-  if (!script) {
-    script = document.createElement("script");
-    script.id = "tradingview-js-sdk";
-    script.src = "https://tradingview.com";
-    script.type = "text/javascript";
-    script.async = true;
-    document.head.appendChild(script);
-  }
-
-  const existingOnload = script.onload;
-  script.onload = () => {
-    if (existingOnload) existingOnload();
-    callback();
-  };
-};
-
 const DashboardChartCard = (props) => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    let widgetInstance = null;
+    if (!containerRef.current) return;
 
-    loadTradingViewScript(() => {
-      if (!containerRef.current || !window.TradingView) return;
-      containerRef.current.innerHTML = ""; 
+    let cancelled = false;
+    const targetId = props.id + "-container-dashboard";
 
-      const targetId = props.id + "-container-dashboard";
+    const init = () => {
+      if (cancelled) return;
+      if (!window.TradingView) {
+        // poll until TradingView SDK is available (short timeout)
+        setTimeout(init, 250);
+        return;
+      }
+
+      containerRef.current.innerHTML = "";
+
       const innerDiv = document.createElement("div");
       innerDiv.id = targetId;
       innerDiv.style.width = "100%";
       innerDiv.style.height = "100%";
       containerRef.current.appendChild(innerDiv);
 
-      widgetInstance = new window.TradingView.widget({
+      // Use the official widget constructor to match the SDK
+      new window.TradingView.widget({
         container_id: targetId,
         symbol: props.symbol,
         width: "100%",
@@ -63,13 +49,13 @@ const DashboardChartCard = (props) => {
         hide_volume: true,
         withdateranges: true,
       });
-    });
+    };
+
+    init();
 
     return () => {
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
-      }
-      widgetInstance = null;
+      cancelled = true;
+      if (containerRef.current) containerRef.current.innerHTML = "";
     };
   }, [props.id, props.symbol]);
 
@@ -121,7 +107,6 @@ export default function MarketDashboard() {
     "div",
     { className: "market-dashboard" },
     
-    // 📊 FIXED: Enhanced 3-column reference rate layout card panel
     React.createElement(
       "div",
       { className: "market-rate-panel" },
@@ -139,27 +124,23 @@ export default function MarketDashboard() {
       
       error 
         ? React.createElement("p", { className: "rate-error" }, error)
-        : // Grid block displaying USD, EUR, and GBP dynamically side-by-side
-          React.createElement(
+        : React.createElement(
             "div",
             { 
               className: "dashboard-rate-row-grid",
               style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem", marginTop: "1rem" } 
             },
             
-            // USD Display Cell
             React.createElement("div", { style: { borderRight: "1px dashed var(--line)", paddingRight: "1rem" } },
               React.createElement("span", { style: { fontSize: "0.75rem", textTransform: "uppercase", color: "var(--faint)", fontWeight: "600" } }, "USD / INR"),
               React.createElement("div", { className: "rate-value", style: { fontSize: "1.9rem", marginTop: "4px" } }, "₹" + formatRate(marketData?.usdInr))
             ),
             
-            // EUR Display Cell
             React.createElement("div", { style: { borderRight: "1px dashed var(--line)", paddingRight: "1rem" } },
               React.createElement("span", { style: { fontSize: "0.75rem", textTransform: "uppercase", color: "var(--faint)", fontWeight: "600" } }, "EUR / INR"),
               React.createElement("div", { className: "rate-value", style: { fontSize: "1.9rem", marginTop: "4px" } }, "₹" + formatRate(marketData?.eurInr))
             ),
             
-            // GBP Display Cell
             React.createElement("div", null,
               React.createElement("span", { style: { fontSize: "0.75rem", textTransform: "uppercase", color: "var(--faint)", fontWeight: "600" } }, "GBP / INR"),
               React.createElement("div", { className: "rate-value", style: { fontSize: "1.9rem", marginTop: "4px" } }, "₹" + formatRate(marketData?.gbpInr))
@@ -167,7 +148,6 @@ export default function MarketDashboard() {
           )
     ),
 
-    // Multi-Widget Charts Grid Loop Layout Block
     React.createElement(
       "div",
       { className: "market-widget-grid" },
