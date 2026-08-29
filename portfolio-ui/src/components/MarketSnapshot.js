@@ -120,7 +120,7 @@ export default function MarketSnapshot() {
     React.createElement(
       "div",
       { className: "market-summary-card market-summary-ticker" },
-      React.createElement("div", { className: "ticker-header" }, "MARKET SNAPSHOT"),
+      React.createElement("div", { className: "ticker-header" }, "MARKET TRENDS"),
       React.createElement("div", {
         className: "tradingview-snapshot-canvas-wrapper",
         ref: tickerRef

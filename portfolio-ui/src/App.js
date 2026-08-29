@@ -7,6 +7,7 @@ import "./App.css";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const MarketsPage = lazy(() => import("./pages/MarketsPage"));
+const TodayPage = lazy(() => import("./pages/TodayPage"));
 const ToolsPage = lazy(() => import("./pages/ToolsPage"));
 const ToolDetailPage = lazy(() => import("./pages/ToolDetailPage"));
 const AiPage = lazy(() => import("./pages/AiPage"));
@@ -27,6 +28,7 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/today" element={<TodayPage />} />
           <Route path="/markets" element={<MarketsPage />} />
           <Route path="/tools" element={<ToolsPage />} />
           <Route path="/tools/:slug" element={<ToolDetailPage />} />

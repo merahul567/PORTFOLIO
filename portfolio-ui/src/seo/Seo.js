@@ -21,7 +21,7 @@ export default function Seo({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonical} />
-      <meta property="og:image" content={`${SITE.url}/RK_logo.png`} />
+      <meta property="og:image" content={`${SITE.url}/favicon.ico`} />
       <meta name="twitter:card" content="summary" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />

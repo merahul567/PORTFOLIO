@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import Seo from "../seo/Seo";
 import { SITE } from "../siteConfig";
 
-const STACK = ["Java", "Spring Boot", "React", "JavaScript", "HTML/CSS"];
+const STACK = ["Java", "Spring Boot", "React", "ASP .NET", "Azure"];
 
 export default function AboutPage() {
   const { hash } = useLocation();
@@ -28,8 +28,8 @@ export default function AboutPage() {
           Software engineer, technology builder, and independent product experimenter.
         </p>
         <p className="page-lead">
-          I have six years of experience in software development, with day-to-day work in
-          Java and React. KumarRahul.in is where I put practical tools and market context on
+          I have 7+ years of experience in software development, with day-to-day work in
+          Java, ASP .NET, and React. KumarRahul.in is where I put practical tools and market context on
           the public internet.
         </p>
         <div className="stack-list" aria-label="Technology">

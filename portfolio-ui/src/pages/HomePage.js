@@ -17,15 +17,14 @@ export default function HomePage() {
       <section className="hero">
         <div className="wrap">
           <p className="hero-kicker">Technology platform</p>
-          <h1>KumarRahul.in</h1>
           <p className="hero-tagline">{SITE.tagline}</p>
           <p className="hero-support">{SITE.supportLine}</p>
           <div className="hero-actions">
             <Link className="btn btn-primary" to="/tools">
               Explore Tools
             </Link>
-            <Link className="btn btn-ghost" to="/markets">
-              Market Dashboard
+            <Link className="btn btn-ghost" to="/today">
+              What's Happening Today?
             </Link>
           </div>
         </div>
@@ -49,13 +48,11 @@ export default function HomePage() {
 
         <section className="home-section" aria-labelledby="snapshot-heading">
           <div className="section-head">
-            <h2 id="snapshot-heading">Market snapshot</h2>
-            <Link to="/markets">Open dashboard</Link>
+            <h2 id="snapshot-heading">MARKET SNAPSHOT</h2>
           </div>
           <MarketSnapshot />
           <p className="quiet-note" style={{ marginTop: "0.85rem" }}>
-            Quotes are not invented. Values appear here only after a market-data source is
-            connected on the server, with timestamp and attribution.
+            Live quotes only after a market-data source is connected on the server, with timestamp and attribution.
           </p>
         </section>
 

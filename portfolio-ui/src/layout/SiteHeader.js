@@ -5,7 +5,7 @@ import { useTheme } from "../theme/ThemeProvider";
 
 const NAV = [
   { to: "/", label: "Home" },
-  { to: "/markets", label: "Markets" },
+  { to: "/today", label: "Today" },
   { to: "/tools", label: "Tools" },
   { to: "/ai", label: "AI" },
   { to: "/insights", label: "Insights" },
@@ -67,9 +67,30 @@ export default function SiteHeader() {
             className="icon-btn nav-toggle"
             aria-expanded={open}
             aria-controls="mobile-nav"
+            aria-label="Toggle navigation menu"
             onClick={() => setOpen((value) => !value)}
           >
-            {open ? "Close" : "More"}
+            {open ? (
+              <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M4.5 4.5l11 11M15.5 4.5l-11 11"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  d="M2 5h16M2 10h16M2 15h16"
+                />
+              </svg>
+            )}
           </button>
         </div>
       </div>

@@ -415,11 +415,11 @@ img {
 
   .nav-toggle {
     display: inline-flex;
-    margin-left: auto;
   }
 
   .header-actions {
-    margin-left: 0;
+    margin-left: auto;
+    gap: 0.6rem;
   }
 
   .footer-grid {
