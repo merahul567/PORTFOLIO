@@ -38,7 +38,7 @@ export default function HomePage() {
           </div>
           <div className="cred-cell">
             <div className="cred-label">Experience</div>
-            <p>Six years building production software. Independent product experiments here.</p>
+            <p>Eight years building production software. Independent product experiments here.</p>
           </div>
           <div className="cred-cell">
             <div className="cred-label">Intent</div>

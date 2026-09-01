@@ -3,9 +3,10 @@ import { axiosGet } from "../apiService";
 import "./MarketSnapshot.css";
 
 export const snapshotInstruments = [
-  { id: "nasdaq100", label: "NASDAQ 100", symbol: "CAPITALCOM:US100", customLabel: "NASDAQ 100" }, 
-  { id: "bitcoin", label: "Bitcoin", symbol: "BINANCE:BTCUSDT", customLabel: "Bitcoin" }, 
-  { id: "gold", label: "Gold", symbol: "OANDA:XAUUSD", customLabel: "Gold" },
+{ id: "nasdaq100", label: "NASDAQ 100", symbol: "CAPITALCOM:US100", customLabel: "NASDAQ 100" },
+{ id: "bitcoin", label: "Bitcoin", symbol: "BINANCE:BTCUSDT", customLabel: "Bitcoin" },
+{ id: "gold", label: "Gold", symbol: "OANDA:XAUUSD", customLabel: "Gold" },
+{ id: "sensex", label: "Sensex", symbol: "BSE:SENSEX", customLabel: "Sensex" }
 ];
 
 export default function MarketSnapshot() {

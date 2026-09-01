@@ -129,7 +129,7 @@ public class MarketDataService {
         }
     }
 
-    @Scheduled(fixedDelay = 300000)
+    @Scheduled(fixedDelay = 10000000)
     public void refreshMarketData() {
         log.info("⏰ SCHEDULED REFRESH: Syncing exchange rate cache sets...");
         fetchAndSyncAllForexRates();
