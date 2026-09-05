@@ -1,4 +1,29 @@
-# Getting Started with Create React App
+# KumarRahul.in UI
+
+This is the Vite + React frontend for KumarRahul.in. It preserves the existing React Router routes, API integration, SEO metadata, TradingView widgets, and Spring Boot deployment copy step.
+
+## Commands
+
+```bash
+npm run dev
+npm run build
+npm run preview
+```
+
+`npm run build` writes the production bundle to `build/` and copies it to `../portfolio-services/src/main/resources/static/` for the Spring Boot packaging flow.
+
+## Environment
+
+Copy `.env.example` to `.env.local` when local overrides are needed:
+
+- `VITE_API_BASE_URL`: browser-safe API base URL. Defaults to `/api/`.
+- `VITE_GA_MEASUREMENT_ID`: optional Google Analytics measurement ID.
+
+Only values intended for browser exposure may use the `VITE_*` prefix. Private API keys belong in the backend service, never in this project.
+
+## Deployment
+
+The app uses browser history routing. Production hosting must serve `index.html` for the client routes, and the Spring Boot `SpaController` provides that fallback when the UI is served by the existing backend.# Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -9,7 +34,7 @@ In the project directory, you can run:
 ### `npm start`
 
 Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Open [http://localhost:5173] to view it in your browser.
 
 The page will reload when you make changes.\
 You may also see any lint errors in the console.

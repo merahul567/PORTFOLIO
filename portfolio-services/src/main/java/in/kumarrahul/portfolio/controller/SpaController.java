@@ -8,6 +8,7 @@ public class SpaController {
 
     @GetMapping({
             "/markets",
+            "/today",
             "/tools",
             "/tools/**",
             "/ai",

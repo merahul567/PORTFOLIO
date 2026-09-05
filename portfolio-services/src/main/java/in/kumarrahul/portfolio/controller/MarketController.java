@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/market")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:3000", "https://www.kumarrahul.in", "https://kumarrahul.in"})
+@CrossOrigin(origins = {"http://localhost:5173", "https://www.kumarrahul.in", "https://kumarrahul.in"})
 public class MarketController {
     
     private final MarketDataService marketDataService;
