@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { SITE } from "../siteConfig";
+import "./SiteFooter.css";
 
 export default function SiteFooter() {
   return (

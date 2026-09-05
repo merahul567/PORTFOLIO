@@ -3,17 +3,16 @@ import { useLocation, Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./layout/Layout";
 import ReactGA from 'react-ga4';
 import PageFallback from "./layout/PageFallback";
-import "./App.css";
 
-const HomePage = lazy(() => import("./pages/HomePage"));
-const MarketsPage = lazy(() => import("./pages/MarketsPage"));
-const TodayPage = lazy(() => import("./pages/TodayPage"));
-const ToolsPage = lazy(() => import("./pages/ToolsPage"));
-const ToolDetailPage = lazy(() => import("./pages/ToolDetailPage"));
-const AiPage = lazy(() => import("./pages/AiPage"));
-const InsightsPage = lazy(() => import("./pages/InsightsPage"));
-const AboutPage = lazy(() => import("./pages/AboutPage"));
-const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const HomePage = lazy(() => import("./pages/HomePage/HomePage"));
+const MarketsPage = lazy(() => import("./pages/MarketsPage/MarketsPage"));
+const TodayPage = lazy(() => import("./pages/TodayPage/TodayPage"));
+const ToolsPage = lazy(() => import("./pages/ToolsPage/ToolsPage"));
+const ToolDetailPage = lazy(() => import("./pages/ToolDetailPage/ToolDetailPage"));
+const AiPage = lazy(() => import("./pages/AiPage/AiPage"));
+const InsightsPage = lazy(() => import("./pages/InsightsPage/InsightsPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage/AboutPage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage/NotFoundPage"));
 
 export default function App() {
   const location = useLocation();

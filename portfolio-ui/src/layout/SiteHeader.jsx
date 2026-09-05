@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import { SITE } from "../siteConfig";
 import { useTheme } from "../theme/ThemeProvider";
+import "./SiteHeader.css";
 
 const NAV = [
   { to: "/", label: "Home" },
