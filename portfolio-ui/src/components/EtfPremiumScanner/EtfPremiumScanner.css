@@ -1,0 +1,93 @@
+.etf-scanner {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.etf-scanner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.etf-kicker {
+  display: block;
+  color: var(--faint);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.etf-scanner-header h2 {
+  margin: 0.25rem 0 0;
+  font-size: 1.2rem;
+}
+
+.etf-status {
+  color: var(--muted);
+  font: 0.8rem var(--font-mono);
+  white-space: nowrap;
+}
+
+.etf-error {
+  color: var(--danger);
+  margin: 0.5rem 0 0;
+}
+
+.etf-table-wrap {
+  overflow-x: auto;
+}
+
+.etf-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.etf-table th,
+.etf-table td {
+  padding: 0.9rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.etf-table th {
+  color: var(--faint);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.etf-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.etf-name {
+  font-weight: 600;
+}
+
+.etf-table small {
+  color: var(--muted);
+}
+
+.premium-positive { color: var(--success, #0a7f4d); font-weight: 700; }
+.premium-negative { color: var(--danger, #d13b3b); font-weight: 700; }
+.premium-neutral { color: var(--muted); font-weight: 600; }
+
+.etf-empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 1.2rem;
+}
+
+@media (max-width: 700px) {
+  .etf-scanner-header { flex-direction: column; align-items: flex-start; }
+  .etf-status { white-space: normal; }
+  .etf-table th,
+  .etf-table td { padding: 0.75rem 0.5rem; }
+}

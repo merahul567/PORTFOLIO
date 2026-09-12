@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Seo from "../../seo/Seo";
 import { SITE } from "../../siteConfig";
+import "./AboutPage.css";
 
 const STACK = ["Java", "Spring Boot", "React", "ASP .NET", "Azure"];
 
@@ -38,11 +39,11 @@ export default function AboutPage() {
           ))}
         </div>
         <section className="contact-block" id="contact">
-          <h2 style={{ fontSize: "1.2rem" }}>Contact</h2>
-          <p style={{ marginTop: "0.55rem", color: "var(--muted)" }}>
+          <h2 className="contact-title">Contact</h2>
+          <p className="contact-line">
             Email: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
           </p>
-          <p style={{ marginTop: "0.35rem", color: "var(--muted)" }}>
+          <p className="contact-line">
             LinkedIn: {" "}
             <a href={SITE.linkedin} target="_blank" rel="noopener noreferrer">
               rahul-kumar-45693413a

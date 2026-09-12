@@ -8,26 +8,35 @@ export default function SiteFooter() {
     <footer className="site-footer">
       <div className="wrap">
         <div className="footer-grid">
-          <div>
+          <div className="footer-branding">
             <div className="footer-brand">{SITE.name}</div>
-            <p>{SITE.tagline}</p>
-            <p style={{ marginTop: "0.4rem" }}>{SITE.supportLine}</p>
+            <p className="footer-tagline">{SITE.tagline}</p>
           </div>
+
           <div className="footer-links">
+            <Link to="/today">Today</Link>
             <Link to="/markets">Markets</Link>
-            <Link to="/tools">Tools</Link>
-            <Link to="/insights">Insights</Link>
           </div>
+
           <div className="footer-links">
-            <Link to="/about">About</Link>
-            <Link to="/about#contact">Contact</Link>
+            <Link to="/tools">Tools</Link>
             <Link to="/ai">AI</Link>
           </div>
+
+          <div className="footer-links">
+            <Link to="/insights">Insights</Link>
+            <Link to="/about">About</Link>
+          </div>
+
+          <div className="footer-links">
+            <Link to="/tools/etf-premium">ETF Scanner</Link>
+            <Link to="/about#contact">Contact</Link>
+          </div>
         </div>
+
         <p className="footer-note">
-          Market figures and tool outputs are for informational purposes only. Nothing on this
-          site is investment advice, a solicitation, or a recommendation to buy or sell any
-          security. © {new Date().getFullYear()} Rahul Kumar.
+          Market data and tools are informational only. Nothing here is investment advice.
+          <span className="footer-copy"> © {new Date().getFullYear()} Rahul Kumar.</span>
         </p>
       </div>
     </footer>

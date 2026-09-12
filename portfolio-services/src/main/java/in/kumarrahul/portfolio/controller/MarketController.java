@@ -1,5 +1,6 @@
 package in.kumarrahul.portfolio.controller;
 
+import in.kumarrahul.portfolio.dto.EtfPremiumDTO;
 import in.kumarrahul.portfolio.dto.MarketSnapshotDTO;
 import in.kumarrahul.portfolio.service.MarketDataService;
 import lombok.RequiredArgsConstructor;
@@ -9,17 +10,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/market")
 @RequiredArgsConstructor
 @CrossOrigin(origins = {"http://localhost:5173", "https://www.kumarrahul.in", "https://kumarrahul.in"})
 public class MarketController {
-    
+
     private final MarketDataService marketDataService;
-    
+
     @GetMapping("/snapshot")
     public ResponseEntity<MarketSnapshotDTO> getMarketSnapshot() {
         MarketSnapshotDTO snapshot = marketDataService.getMarketSnapshot();
         return ResponseEntity.ok(snapshot);
+    }
+
+    @GetMapping("/etf-premium")
+    public ResponseEntity<List<EtfPremiumDTO>> getEtfPremiumScan() {
+        return ResponseEntity.ok(marketDataService.getEtfPremiumScan());
     }
 }

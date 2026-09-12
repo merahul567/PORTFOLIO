@@ -1,6 +1,7 @@
 import React from "react";
 import Seo from "../../seo/Seo";
 import { forthcomingInsights } from "../../data/insightsPreview";
+import "./InsightsPage.css";
 
 export default function InsightsPage() {
   return (

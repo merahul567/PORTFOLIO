@@ -1,8 +1,10 @@
 .market-dashboard { margin-top: 2.4rem; }
 .market-rate-panel,
+.premium-panel,
 .tradingview-widget-card,
 .dashboard-footer { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: var(--radius); }
-.market-rate-panel { padding: 1.2rem; margin-bottom: 1.5rem; }
+.market-rate-panel,
+.premium-panel { padding: 1.2rem; margin-bottom: 1.5rem; }
 .rate-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.8rem; }
 .rate-label,
 .dashboard-rate-label { display: block; color: var(--faint); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
@@ -14,6 +16,18 @@
 .dashboard-rate-label { letter-spacing: 0.08em; }
 .rate-value { margin-top: 0.25rem; color: var(--ink); font: 700 1.9rem var(--font-mono); letter-spacing: -0.04em; }
 .rate-error { margin-top: 0.7rem; color: var(--danger); font-size: 0.9rem; }
+.premium-table-wrapper { overflow-x: auto; }
+.premium-table { width: 100%; border-collapse: collapse; font-size: 0.94rem; }
+.premium-table th,
+.premium-table td { padding: 0.9rem 0.8rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.premium-table th { color: var(--faint); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.premium-table tbody tr:last-child td { border-bottom: 0; }
+.premium-name { font-weight: 600; }
+.premium-table small { color: var(--muted); }
+.premium-positive { color: var(--success, #0a7f4d); font-weight: 700; }
+.premium-negative { color: var(--danger, #d13b3b); font-weight: 700; }
+.premium-neutral { color: var(--muted); font-weight: 600; }
+.premium-empty { color: var(--muted); text-align: center; padding: 1.2rem; }
 .market-widget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
 .tradingview-widget-card { min-width: 0; padding: 0.9rem; overflow: hidden; }
 .widget-card-header { display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem; padding: 0.1rem 0.3rem 0.7rem; }
@@ -34,5 +48,7 @@
   .dashboard-rate-item:last-child { padding: 0.8rem 0; border-right: 0; border-bottom: 1px dashed var(--line); }
   .dashboard-rate-item:first-child { padding-top: 0; }
   .dashboard-rate-item:last-child { padding-bottom: 0; border-bottom: 0; }
+  .premium-table th,
+  .premium-table td { padding: 0.75rem 0.5rem; }
   .tradingview-widget { height: 320px !important; }
 }

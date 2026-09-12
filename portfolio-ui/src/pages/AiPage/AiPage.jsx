@@ -1,5 +1,6 @@
 import React from "react";
 import Seo from "../../seo/Seo";
+import "./AiPage.css";
 
 export default function AiPage() {
   return (

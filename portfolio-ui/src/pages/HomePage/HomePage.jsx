@@ -64,13 +64,17 @@ export default function HomePage() {
           </div>
           <div className="tool-rows">
             {featuredTools.map((tool) => (
-              <Link key={tool.slug} className="tool-row" to={tool.route}>
+              <Link
+                key={tool.slug}
+                className={`tool-row ${tool.status === "in-development" ? "tool-row-in-development" : ""} ${tool.status === "planned" ? "tool-row-planned" : ""}`}
+                to={tool.route}
+              >
                 <div className="tool-cat">{tool.category}</div>
                 <div>
                   <div className="tool-name">{tool.name}</div>
                   <p className="tool-copy">{tool.description}</p>
                 </div>
-                <span className="status-pill">{statusLabel(tool.status)}</span>
+                <span className={`status-pill ${tool.status === "in-development" ? "status-in-development" : ""} ${tool.status === "planned" ? "status-planned" : ""}`}>{statusLabel(tool.status)}</span>
               </Link>
             ))}
           </div>
@@ -95,24 +99,7 @@ export default function HomePage() {
           </p>
         </section>
 
-        <section className="home-section about-strip" aria-labelledby="about-heading">
-          <div>
-            <p className="page-kicker" id="about-heading">
-              About
-            </p>
-            <h2 className="page-title" style={{ maxWidth: "18ch" }}>
-              Engineer, builder, independent experimenter.
-            </h2>
-            <p className="muted" style={{ marginTop: "0.85rem" }}>
-              I design and ship software, then use this site to put practical tools and market
-              context in front of other people. The résumé stays on About. The product stays
-              here.
-            </p>
-          </div>
-          <Link className="btn btn-ghost" to="/about">
-            About Rahul
-          </Link>
-        </section>
+
       </div>
     </>
   );

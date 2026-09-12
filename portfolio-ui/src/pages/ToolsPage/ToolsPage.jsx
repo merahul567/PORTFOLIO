@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Seo from "../../seo/Seo";
 import { toolsCatalog } from "../../data/toolsCatalog";
+import "./ToolsPage.css";
 
 export default function ToolsPage() {
   return (
@@ -20,11 +21,16 @@ export default function ToolsPage() {
         </p>
         <div className="card-list">
           {toolsCatalog.map((tool) => (
-            <Link key={tool.slug} className="catalog-item" to={tool.route} style={{ textDecoration: "none" }}>
+            <Link
+              key={tool.slug}
+              className={`catalog-item ${tool.status === "in-development" ? "catalog-item-development" : ""} ${tool.status === "planned" ? "catalog-item-planned" : ""}`}
+              to={tool.route}
+              style={{ textDecoration: "none" }}
+            >
               <div className="tool-cat">{tool.category}</div>
               <h2 style={{ marginTop: "0.35rem" }}>{tool.name}</h2>
               <p>{tool.description}</p>
-              <p className="quiet-note" style={{ marginTop: "0.45rem" }}>
+              <p className={`quiet-note ${tool.status === "in-development" ? "quiet-note-development" : ""} ${tool.status === "planned" ? "quiet-note-planned" : ""}`} style={{ marginTop: "0.45rem" }}>
                 {statusLabel(tool.status)}
               </p>
             </Link>
