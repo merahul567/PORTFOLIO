@@ -14,7 +14,7 @@ export const toolsCatalog = [
     description: "Place two or more ETFs side by side on cost, structure, and stated objective.",
     category: "Markets",
     route: "/tools/etf-comparison",
-    status: "in-development",
+    status: "planned",
     featured: true,
   },
   {
@@ -23,7 +23,7 @@ export const toolsCatalog = [
     description: "A structured comparison view for mutual funds — not a recommendation engine.",
     category: "Markets",
     route: "/tools/mf-comparison",
-    status: "in-development",
+    status: "planned",
     featured: true,
   },
   {
@@ -32,7 +32,7 @@ export const toolsCatalog = [
     description: "Calculate extended internal rate of return from irregular cash flows.",
     category: "Finance",
     route: "/tools/xirr",
-    status: "in-development",
+    status: "planned",
     featured: true,
   },
   {

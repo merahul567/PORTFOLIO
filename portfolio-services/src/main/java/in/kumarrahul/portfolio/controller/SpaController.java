@@ -8,16 +8,14 @@ public class SpaController {
 
     @GetMapping({
             "/markets",
+            "/today",
             "/tools",
             "/tools/**",
             "/ai",
             "/insights",
             "/insights/**",
-            "/projects",
-            "/projects/**",
             "/about",
             "/blog",
-            "/project",
             "/contact"
     })
     public String forward() {

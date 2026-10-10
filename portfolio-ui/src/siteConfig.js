@@ -6,7 +6,18 @@ export const SITE = {
   author: "Rahul Kumar",
   email: "merahul567@gmail.com",
   linkedin: "https://www.linkedin.com/in/rahul-kumar-45693413a/",
+  keywords: [
+    "KumarRahul.in",
+    "Rahul Kumar",
+    "market intelligence",
+    "ETF premium discount",
+    "ETF scanner India",
+    "NAV vs market price",
+    "US ETF premium discount",
+    "financial tools",
+    "investing tools",
+  ],
 };
 
 export const defaultDescription =
-  "KumarRahul.in is a technology platform by Rahul Kumar for market intelligence, financial tools, insights, and independent product experiments.";
+  "KumarRahul.in is a technology platform by Rahul Kumar for market intelligence, financial tools, ETF premium scans, and independent product experiments.";
