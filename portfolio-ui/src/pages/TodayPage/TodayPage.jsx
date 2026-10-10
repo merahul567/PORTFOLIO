@@ -7,15 +7,15 @@ export default function TodayPage() {
     <div className="page inner-page">
       <Seo
         title="What's Happening Today?"
-        description="A daily briefing of five important things happening today across India, markets, global, technology & AI, and business — designed to be read in ~60 seconds."
+        description="A concise daily briefing across India, markets, global, technology & AI, science & environment, and business — designed to be read in about 60 seconds."
         path="/today"
       />
       <div className="wrap">
         <p className="page-kicker">Daily briefing</p>
         <h1 className="page-title">What's Happening Today?</h1>
         <p className="page-lead">
-          Five important things happening today across India, markets, global, technology & AI,
-          and business — designed to be understood in ~60 seconds.
+          Concise updates across India, markets, global, technology & AI, science & environment,
+          and business — designed to be understood in about 60 seconds.
         </p>
         <DailyBriefing compact={false} />
       </div>

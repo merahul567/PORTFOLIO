@@ -32,14 +32,24 @@ export default function DailyBriefing({ compact = false }) {
   return (
     <div className={`briefing-shell ${compact ? "briefing-compact" : "briefing-full"}`}>
       <div className="briefing-intro">
-        <p className="briefing-subtitle">Five important things happening today</p>
+        <p className="briefing-subtitle">Important updates for today</p>
         <p className="briefing-description">A concise daily briefing designed to be read in ~60 seconds.</p>
       </div>
       <div className="briefing-grid">
         {briefing.map((categoryGroup) => (
           <div key={categoryGroup.id} className="briefing-category-section">
             <div className="category-header">
-              <span className="category-emoji">{categoryGroup.emoji}</span>
+              {categoryGroup.id === "india" ? (
+                <svg className="category-emoji india-flag" viewBox="0 0 24 16" role="img" aria-label="India flag">
+                  <rect width="24" height="5.33" fill="#FF9933" />
+                  <rect y="5.33" width="24" height="5.34" fill="#FFFFFF" />
+                  <rect y="10.67" width="24" height="5.33" fill="#138808" />
+                  <circle cx="12" cy="8" r="2.05" fill="none" stroke="#000080" strokeWidth="0.65" />
+                  <circle cx="12" cy="8" r="0.35" fill="#000080" />
+                </svg>
+              ) : (
+                <span className="category-emoji" aria-hidden="true">{categoryGroup.emoji}</span>
+              )}
               <h3 className="category-name">{categoryGroup.name}</h3>
             </div>
             <div className="briefing-item-list">

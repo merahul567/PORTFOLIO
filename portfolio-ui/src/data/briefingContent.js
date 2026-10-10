@@ -34,6 +34,12 @@ export const briefingCategories = [
     color: "var(--color-category-tech)",
   },
   {
+    id: "science-environment",
+    name: "Science & Environment",
+    emoji: "🔬",
+    color: "var(--color-category-global)",
+  },
+  {
     id: "business",
     name: "Business",
     emoji: "💼",
@@ -45,7 +51,7 @@ export const briefingCategories = [
  * Sample briefing items structure
  * Each item contains:
  * - id: unique identifier
- * - category: which category this belongs to (india, markets, global, tech-ai, business)
+ * - category: which category this belongs to (india, markets, global, tech-ai, science-environment, business)
  * - headline: concise topic (1-2 words)
  * - summary: 1-2 sentence summary (~60 seconds read time)
  * - timestamp: when this was last updated
@@ -99,6 +105,16 @@ export const todayBriefing = [
     headline: "Corporate Earnings",
     summary:
       "Q3 earnings season shows mixed results with IT services and financial stocks leading growth. Consumer discretionary sector faces margin pressures.",
+    timestamp: null,
+    source: null,
+    link: null,
+  },
+  {
+    id: "science-environment-1",
+    category: "science-environment",
+    headline: "Clean Energy Progress",
+    summary:
+      "Track notable developments in renewable energy, climate research, and environmental policy, with context on what changed and why it matters.",
     timestamp: null,
     source: null,
     link: null,

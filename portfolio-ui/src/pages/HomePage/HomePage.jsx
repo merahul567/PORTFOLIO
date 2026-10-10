@@ -35,15 +35,15 @@ export default function HomePage() {
         <section className="credibility" aria-label="About the builder">
           <div className="cred-cell">
             <div className="cred-label">Builder</div>
-            <p>Rahul Kumar, software engineer. Java, Spring Boot, and React.</p>
+            <p>Rahul Kumar, software engineer building practical web products and data tools.</p>
           </div>
           <div className="cred-cell">
             <div className="cred-label">Experience</div>
-            <p>Eight years building production software. Independent product experiments here.</p>
+            <p>Eight years building production software with Java, Spring Boot, and React.</p>
           </div>
           <div className="cred-cell">
             <div className="cred-label">Intent</div>
-            <p>Useful tools and clear market data — not a hiring landing page.</p>
+            <p>Independent tools and clear market explainers, built around useful data and thoughtful design.</p>
           </div>
         </section>
 
